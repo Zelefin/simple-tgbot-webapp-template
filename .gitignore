@@ -89,3 +89,5 @@ venv.bak/
 .idea/
 .env
 cache/
+
+main.db
