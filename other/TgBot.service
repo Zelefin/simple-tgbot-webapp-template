@@ -1,0 +1,15 @@
+[Unit]
+Description=simple TgBot with web app
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/ubuntu/tgbot-webapp-template
+ExecStart=/home/ubuntu/tgbot-webapp-template/.venv/bin/python3.11 /home/ubuntu/tgbot-webapp-template/main.py
+RestartSec=10
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target

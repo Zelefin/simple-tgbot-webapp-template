@@ -1,0 +1,6 @@
+.idea
+.vscode
+.venv
+
+frontend
+!frontend/simple-web-app/dist
