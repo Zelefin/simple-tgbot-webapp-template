@@ -4,10 +4,9 @@ This repository contains a simple and lightweight template for building a Telegr
 
 Preview of web app in both light and dark themes:
 
-![IMG_2509(1)](https://github.com/user-attachments/assets/ed617564-fbee-4cc4-9fcc-9a5fdd89b069)
-![IMG_2510(1)](https://github.com/user-attachments/assets/581482f3-f31e-4f03-867e-7eccd7055583)
+<img src="https://github.com/user-attachments/assets/ed617564-fbee-4cc4-9fcc-9a5fdd89b069" width=50% height=50%>
 
-Live demo: [@webapp_template_bot](https://t.me/webapp_template_bot)
+Live demo avaliable here: [@webapp_template_bot](https://t.me/webapp_template_bot)
 
 This template is built upon:
 
