@@ -1,0 +1,77 @@
+name: Build and Deploy Web Apps
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+
+      - name: Install dependencies and build simple-web-app
+        run: |
+          cd frontend/simple-web-app
+          npm install
+          npm run build
+
+      - name: Upload simple-web-app build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: simple-web-app-build
+          path: frontend/simple-web-app/dist/
+
+      # - name: Install dependencies and build new-web-app
+      #   run: |
+      #     cd frontend/new-web-app
+      #     npm install
+      #     npm run build
+
+      # - name: Upload new-web-app build artifacts
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: new-web-app-build
+      #     path: frontend/new-web-app/dist/
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download simple-web-app build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: simple-web-app-build
+          path: dist/simple-web-app/dist
+
+      # - name: Download new-web-app build artifacts
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: new-web-app-build
+      #     path: dist/new-web-app/dist
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.DEPLOY_SERVER }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          scp -r dist/simple-web-app/dist/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_SERVER }}:${{ secrets.DEPLOY_PATH }}/simple-web-app
+        # scp -r dist/new-web-app/dist/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_SERVER }}:${{ secrets.DEPLOY_PATH }}/new-web-app
