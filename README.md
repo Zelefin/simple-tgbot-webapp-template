@@ -2,11 +2,13 @@
 
 This repository contains a simple and lightweight template for building a Telegram bot with a web app. It provides a solid foundation for quickly developing and deploying Telegram bots with integrated web applications.
 
+It's good for small projects and projects with limited resources, since it takes only ~150MB of RAM for the whole template to run.
+
 Preview of web app in both light and dark themes:
 
 <img src="https://github.com/user-attachments/assets/ed617564-fbee-4cc4-9fcc-9a5fdd89b069" width=50% height=50%>
 
-Live demo avaliable here: [@webapp_template_bot](https://t.me/webapp_template_bot)
+Live demo available here: [@webapp_template_bot](https://t.me/webapp_template_bot)
 
 This template is built upon:
 
@@ -47,7 +49,7 @@ This template is built upon:
 
 2. Set up the backend:
 
-   By default Redis is not installed. If you need Redis just uncomment it in `requirements.txt`
+   By default, Redis is not installed. If you need Redis, just uncomment it in `requirements.txt`.
 
    ```
    python -m venv .venv
@@ -58,28 +60,26 @@ This template is built upon:
 3. Set up the frontend:
 
    ```
-   cd frontend/web-app
+   cd frontend/simple-web-app
    npm install
    ```
 
 4. Configure the application:
    - Rename `.env.dist` to `.env`.
-   - Update the `.env` files with your specific configuration
-   - Update the `base` in `vite.config.ts` to match your web app name. It should be the same as `BOT_WEB_APP_NAME` in `.env` e.g. `/simple-web-app`.
-   - Create a web app in [BotFather](https://t.me/botfather):
-     - Use the `/newapp` command to create a new web app for your bot
-     - Set the URL like `https://yourdomain.com/simple-web-app`
-     - Set web app short name to be the same as `BOT_WEB_APP_NAME` in `.env`, except replace `-` with `_` (since `-` is not allowed in web app short name). It's easy to handle this in code by simply adding `.replace('-', '_')` to the place where you sending web app URL
+   - Update the `.env` file with your specific configuration.
+   - Create a web app in [BotFather](https://t.me/botfather) using `/newapp` command:
+     - Set the URL to `https://yourdomain.com/simple-web-app`.
+     - Set the web app short name to `simple_web_app`, we need to replace `-` with `_`, since `-` is not allowed in web app short names.
 
 > [!TIP]
-> I highly recommend using [Ngrok](https://ngrok.com/) for development. Just obtain domain name and set it as `WEB_DOMAIN` in `.env`. Don't forget to provide new link to botfather too.
+> For development, consider using [Ngrok](https://ngrok.com/). Obtain a domain name and set it as `WEB_DOMAIN` in `.env`. Remember to provide the new link to BotFather as well.
 
 ## Usage
 
 1. Build frontend:
 
    ```
-   cd frontend/web-app
+   cd frontend/simple-web-app
    npm run build
    ```
 
@@ -91,35 +91,61 @@ This template is built upon:
    ```
 
 > [!TIP]
-> I recommend using webhooks, since it goes out of box because we already launching an aiohttp server.
+> I recommend using webhooks, as they're ready to use out of the box due to the already launched aiohttp server.
+
+### Changing web app name
+
+To set your custom web app name (for example we'll use `my-web-shop`) instead of `simple-web-app` follow those steps:
+
+1. Change `BOT_WEB_APP_NAME` in `.env`:
+
+   ```
+   BOT_WEB_APP_NAME=my-web-shop
+   ```
+
+2. Configure `infrastructure/api/web_app_routes.py` and `bot/handlers/web_app.py` for your needs.
+
+3. Rename `frontend/simple-web-app` to `frontend/my-web-shop`.
+
+4. Change `base` in `vite.config.ts` to `/my-web-shop`. Keep in mind that existing code in `IndexPage.tsx` uses `fetch('/simple-web-app/greet')` so simply change it to `fetch('my-web-shop/greet')` or write your own application.
+
+5. Run
+
+   ```
+   npm run build
+   ```
+
+   in `frontend/my-web-shop` directory.
+
+6. Create new web app in [BotFather](https://t.me/botfather), where the URL should be `https://yourdomain.com/my-web-shop` and the web app short name: `my_web_shop`.
 
 ### Adding more web apps
 
-It's quite simple to add one or more web apps to bot with this template. Simply follow this steps:
+To add one or more web apps to your bot with this template, follow these steps:
 
-1. Add new field in .env. For example:
+1. Add a new field in `.env`. For example:
 
    ```
    BOT_NEW_WEB_APP_NAME=new-web-app
    ```
 
-2. Add new variable to TgBot class in `config_reader.py`:
+2. Add a new variable to the TgBot class in `config_reader.py`:
 
-   ```
+   ```python
    new_web_app_name: str
    ```
 
-3. Create file in `infrastructure/api` (e.g `new_web_app_routes.py`) where all the routes for web app will be. Create function like:
+3. Create a file in `infrastructure/api` (e.g., `new_web_app_routes.py`) where all the routes for the web app will be. Create a function like:
 
-   ```
+   ```python
    def setup_new_web_app_routes(app: Application):
    ```
 
-   where all the routes and assets will be added to application. See `simple_web_app_routes.py` for example
+   where all the routes and assets will be added to the application. See `simple_web_app_routes.py` for an example.
 
-4. In `main.py` add:
+4. In `main.py`, add:
 
-   ```
+   ```python
    new_web_app = web.Application()
    ... # pass anything you need
    new_web_app["web_app_name"] = config.tg_bot.new_web_app_name
@@ -127,26 +153,29 @@ It's quite simple to add one or more web apps to bot with this template. Simply 
    app.add_subapp(f"/{config.tg_bot.new_web_app_name}", new_web_app)
    ```
 
-5. Create new handler in `bot/handlers` with all the commands that you need, just don't forget to add them to `bot/misc/default_commands.py`. Also, if you use `-` in web app name, make sure to set `.replace('-', '_')` where you sending web app url.
+5. Create a new handler in `bot/handlers` with all the commands you need. Add new router to `handlers/__init__.py` and new commands to `bot/misc/default_commands.py`. Also, if you use `-` in the web app name, make sure to use `.replace('-', '_')` when sending the web app URL.
 
-6. Create new project in `/frontend`, you can use [Telegram Mini Apps React Template](https://github.com/Telegram-Mini-Apps/reactjs-template) or whatever you want, the only imporant part _(if you configured your routes to depend on config variable)_ is that project folder name should be the same as `BOT_NEW_WEB_APP_NAME` in `.env`.
+6. Create a new project in `/frontend`. You can use [Telegram Mini Apps React Template](https://github.com/Telegram-Mini-Apps/reactjs-template) or any framework you prefer. The only important part (if you configured your routes to depend on the config variable) is that the project folder name should be the same as `BOT_NEW_WEB_APP_NAME` in `.env`.
 
-7. Change `base` in `vite.config.ts` to be the same as `BOT_NEW_WEB_APP_NAME` in `.env` and run
+7. Change `base` in `vite.config.ts` to be the same as `BOT_NEW_WEB_APP_NAME` in `.env` and run:
 
    ```
    npm run build
    ```
 
-8. Create web app in [Botfather](https://t.me/botfather), where URL should be `https://yourdomain.com/new-web-app` (same as `BOT_NEW_WEB_APP_NAME` in `.env`) and web app short name should be same as `BOT_NEW_WEB_APP_NAME` in `.env`, but replace `-` with `_`.
+8. Create a web app in [BotFather](https://t.me/botfather), where the URL should be `https://yourdomain.com/new-web-app` (same as `BOT_NEW_WEB_APP_NAME` in `.env`) and the web app short name should be the same as `BOT_NEW_WEB_APP_NAME` in `.env`, but replace `-` with `_`.
 
 ## Deployment
 
-You can use docker-compose or systemd for deployment.
+You can use Docker Compose or systemd for deployment.
 
-### Docker-compose
+### Docker Compose
 
 > [!NOTE]
-> If you use Redis uncomment `redis_cache` service, `cache` volume and `bot` service dependency in `docker-compose.yml`.
+> If you use Redis, uncomment the `redis_cache` service, `cache` volume, and `bot` service dependency in `docker-compose.yml`.
+
+> [!IMPORTANT]
+> Don't forget to configure your ports in `docker-compose.yml` if you not using default 8080: `ports:- "your_port:8080"`; and then in nginx configuration: `proxy_pass http://127.0.0.1:your_port;`
 
 Simply run this command:
 
@@ -156,34 +185,36 @@ docker-compose up -d --build
 
 ### Systemd
 
-For systemd you can use `other/TgBot.service` - just replace the `WorkingDirectory` and `ExecStart` paths with the actual locations on your system.
+For systemd, you can use `other/TgBot.service` - just replace the `WorkingDirectory` and `ExecStart` paths with the actual locations on your system.
 
 Then:
 
-1. Copy .service file into `/etc/systemd/system/`:
+1. Copy the .service file into `/etc/systemd/system/`:
 
    ```
    sudo cp TgBot.service /etc/systemd/system/
    ```
 
-2. Enable sevrice:
+2. Enable the service:
 
    ```
    sudo systemctl enable TgBot.service
    ```
 
-3. And finally start the service:
+3. Start the service:
    ```
    sudo systemctl start TgBot.service
    ```
 
-From my experience launching bot this way consumes same amount of RAM as docker, so I'd recommend using docker.
+From experience, launching the bot this way consumes about the same amount of RAM as Docker, so I recommend using Docker.
 
-In any case then you only need to:
+### Nginx Configuration
 
-### Nginx
+1. Configure Nginx as a reverse proxy (configuration example provided in `other/nginx_conf`). Save your configuration in `/etc/nginx/sites-available/yourdomain.com` and create symlink like so:
 
-1. Configure Nginx as a reverse proxy (configuration provided in `other/nginx_conf`).
+   ```
+   sudo ln -s /etc/nginx/sites-available/yourdomain.com /etc/nginx/sites-enabled/
+   ```
 
 2. Set up SSL with Certbot:
    ```
