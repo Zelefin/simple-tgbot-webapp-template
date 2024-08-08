@@ -30,7 +30,7 @@ class TgBot(BaseSettings, env_prefix="BOT_"):
 
     token: SecretStr
     admins_ids: list[int]
-    simple_web_app_name: str
+    web_app_name: str
     use_redis: bool = False
     use_webhook: bool = False
     webhook_path: str = ""

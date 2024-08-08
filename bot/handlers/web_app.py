@@ -13,10 +13,10 @@ from aiogram.types import Message
 from bot.config_reader import Config
 
 
-simple_web_app_router = Router()
+web_app_router = Router()
 
 
-@simple_web_app_router.message(Command("inline_web_app"))
+@web_app_router.message(Command("inline_web_app"))
 async def user_inline_web_app(message: Message, bot: Bot, config: Config):
     bot_info = await bot.get_me()
     await message.answer(
@@ -26,7 +26,7 @@ async def user_inline_web_app(message: Message, bot: Bot, config: Config):
                 [
                     InlineKeyboardButton(
                         text="Launch!",
-                        url=f"https://t.me/{bot_info.username}/{config.tg_bot.simple_web_app_name.replace('-', '_')}",
+                        url=f"https://t.me/{bot_info.username}/{config.tg_bot.web_app_name.replace('-', '_')}",
                     )
                 ]
             ]
@@ -34,7 +34,7 @@ async def user_inline_web_app(message: Message, bot: Bot, config: Config):
     )
 
 
-@simple_web_app_router.message(Command("reply_web_app"))
+@web_app_router.message(Command("reply_web_app"))
 async def user_reply_web_app(message: Message, config: Config):
     await message.answer(
         "Added reply keyboard button!",
@@ -44,7 +44,7 @@ async def user_reply_web_app(message: Message, config: Config):
                     KeyboardButton(
                         text="Launch!",
                         web_app=WebAppInfo(
-                            url=f"{config.web.domain}/{config.tg_bot.simple_web_app_name}"
+                            url=f"{config.web.domain}/{config.tg_bot.web_app_name}"
                         ),
                     )
                 ]
@@ -54,11 +54,11 @@ async def user_reply_web_app(message: Message, config: Config):
     )
 
 
-@simple_web_app_router.message(Command("rm_reply_web_app"))
+@web_app_router.message(Command("rm_reply_web_app"))
 async def user_rm_reply_web_app(message: Message):
     await message.answer("Reply button removed!", reply_markup=ReplyKeyboardRemove())
 
 
-@simple_web_app_router.message(F.web_app_data)
+@web_app_router.message(F.web_app_data)
 async def user_web_app_data(message: Message):
     await message.answer("Got info: <i>" + message.web_app_data.data + "</i>")

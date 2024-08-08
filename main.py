@@ -16,7 +16,7 @@ from aiogram import Bot, Dispatcher, F
 from aiohttp.web_runner import GracefulExit
 from aiohttp import web
 
-from infrastructure.api.simple_web_app_routes import setup_simple_web_app_routes
+from infrastructure.api.web_app_routes import setup_web_app_routes
 from infrastructure.database.repo.requests import Database
 from infrastructure.database.setup import create_engine, create_session_pool
 from bot.config_reader import Config, load_config
@@ -160,17 +160,17 @@ def main():
     app["config"] = config
     app["session_pool"] = session_pool
 
-    simple_web_app = web.Application()
-    simple_web_app["bot"] = bot
-    simple_web_app["config"] = config
-    simple_web_app["web_app_name"] = config.tg_bot.simple_web_app_name
-    simple_web_app["session_pool"] = session_pool
+    web_app = web.Application()
+    web_app["bot"] = bot
+    web_app["config"] = config
+    web_app["web_app_name"] = config.tg_bot.web_app_name
+    web_app["session_pool"] = session_pool
     # If you use redis you can pass it to web_app
     # pool = ConnectionPool.from_url(config.redis.make_connection_string())
     # redis = Redis(connection_pool=pool)
-    # simple_web_app["redis"] = redis
-    setup_simple_web_app_routes(simple_web_app)
-    app.add_subapp(f"/{config.tg_bot.simple_web_app_name}", simple_web_app)
+    # web_app["redis"] = redis
+    setup_web_app_routes(web_app)
+    app.add_subapp(f"/{config.tg_bot.web_app_name}", web_app)
 
     if config.tg_bot.use_webhook:
         ip_filter_middleware(ip_filter=IPFilter.default())

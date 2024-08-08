@@ -61,7 +61,7 @@ async def greet_handler(request: Request):
     return json_response({"ok": True})
 
 
-def setup_simple_web_app_routes(app: web.Application):
+def setup_web_app_routes(app: web.Application):
     web_app_name = app["web_app_name"]
 
     # cors for local development

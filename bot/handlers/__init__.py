@@ -2,12 +2,12 @@
 
 from .admin import admin_router
 from .user import user_router
-from .simple_web_app import simple_web_app_router
+from .web_app import web_app_router
 
 routers_list = [
     admin_router,
     user_router,
-    simple_web_app_router,
+    web_app_router,
 ]
 
 __all__ = [
