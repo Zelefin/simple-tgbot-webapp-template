@@ -2,6 +2,13 @@
 
 This repository contains a simple and lightweight template for building a Telegram bot with a web app. It provides a solid foundation for quickly developing and deploying Telegram bots with integrated web applications.
 
+Preview of web app in both light and dark themes:
+
+![IMG_2509(1)](https://github.com/user-attachments/assets/ed617564-fbee-4cc4-9fcc-9a5fdd89b069)
+![IMG_2510(1)](https://github.com/user-attachments/assets/581482f3-f31e-4f03-867e-7eccd7055583)
+
+Live demo: [@webapp_template_bot](https://t.me/webapp_template_bot)
+
 This template is built upon:
 
 - [Telegram Mini Apps React Template](https://github.com/Telegram-Mini-Apps/reactjs-template)
